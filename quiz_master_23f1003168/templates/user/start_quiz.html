@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Start Quiz</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            color: #4a86e8;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-container {
+            width: 600px;
+            background: white;
+            border-radius: 20px;
+            border: 2px solid #000;
+            padding: 20px;
+            position: relative;
+            margin-top: 10px;
+        }
+        
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .question-number {
+            background: #ffeb99;
+            border: 1px solid #000;
+            border-radius: 5px;
+            padding: 5px 15px;
+        }
+        
+        .timer {
+            background: #9fc5e8;
+            border-radius: 20px;
+            padding: 5px 15px;
+        }
+        
+        .question-statement {
+            border: 2px solid #4a86e8;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .options {
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .option-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #4a86e8;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        
+        .option-selected {
+            background-color: #4a86e8;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .quiz-button {
+            background: #9fc5e8;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .arrow {
+            position: absolute;
+            font-size: 30px;
+        }
+        
+        .arrow-top-left {
+            top: -20px;
+            left: -20px;
+        }
+        
+        .arrow-bottom-left {
+            bottom: -20px;
+            left: -20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">{{ quiz.chapter.subject.name }} - {{ quiz.chapter.name }} Quiz</div>
+    
+    <div class="quiz-container">
+        <form id="quizForm" action="/submit_quiz" method="post">
+            <div class="question-info">
+                <div class="question-number">QNo. {{ current_question + 1 }}/{{ total_questions }}</div>
+                <div class="timer" id="timer">Time left: <span id="time-remaining"></span></div>
+            </div>
+            
+            {% for question in questions %}
+            <div class="question-container" id="question-{{ loop.index0 }}" {% if loop.index0 != current_question %}style="display: none;"{% endif %}>
+                <div class="question-statement">
+                    {{ question.question_text }}
+                </div>
+                
+                <div class="options">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="1" id="q{{ question.id }}_option1">
+                        <label class="form-check-label" for="q{{ question.id }}_option1">
+                            {{ question.option1 }}
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="2" id="q{{ question.id }}_option2">
+                        <label class="form-check-label" for="q{{ question.id }}_option2">
+                            {{ question.option2 }}
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="3" id="q{{ question.id }}_option3">
+                        <label class="form-check-label" for="q{{ question.id }}_option3">
+                            {{ question.option3 }}
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="4" id="q{{ question.id }}_option4">
+                        <label class="form-check-label" for="q{{ question.id }}_option4">
+                            {{ question.option4 }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="buttons">
+                <button type="button" class="quiz-button" id="prevBtn" onclick="showPreviousQuestion()" {% if current_question == 0 %}disabled{% endif %}>Previous</button>
+                <button type="button" class="quiz-button" id="nextBtn" onclick="showNextQuestion()">Next</button>
+                <button type="submit" class="quiz-button" id="submitBtn" style="display: none;">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Initialize variables
+        let currentQuestion = {{ current_question }};
+        const totalQuestions = {{ total_questions }}; // Get from Flask template variable
+        let timeRemaining = {{ time_remaining }}; // Use the time remaining passed from Flask
+        
+        // Timer function
+        function updateTimer() {
+            let minutes = Math.floor(timeRemaining / 60);
+            let seconds = timeRemaining % 60;
+            
+            // Format time properly
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            
+            document.getElementById('time-remaining').textContent = minutes + ":" + seconds;
+            
+            if (timeRemaining <= 0) {
+                // Time's up, submit the quiz
+                clearInterval(timerInterval);
+                document.getElementById('quizForm').submit();
+            }
+            
+            timeRemaining--;
+        }
+        
+        // Update timer every second
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Navigation functions
+        function showNextQuestion() {
+            if (currentQuestion < totalQuestions - 1) {
+                document.getElementById('question-' + currentQuestion).style.display = 'none';
+                currentQuestion++;
+                document.getElementById('question-' + currentQuestion).style.display = 'block';
+                
+                // Update navigation buttons
+                document.getElementById('prevBtn').disabled = false;
+                
+                if (currentQuestion === totalQuestions - 1) {
+                    document.getElementById('nextBtn').style.display = 'none';
+                    document.getElementById('submitBtn').style.display = 'inline-block';
+                }
+
+            }
+            if (currentQuestion === totalQuestions - 1) {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'inline-block';
+            }
+            
+            
+            // Update question number display
+            document.querySelector('.question-number').textContent = 'QNo. ' + (currentQuestion + 1) + '/' + totalQuestions;
+        }
+        
+        function showPreviousQuestion() {
+            if (currentQuestion > 0) {
+                document.getElementById('question-' + currentQuestion).style.display = 'none';
+                currentQuestion--;
+                document.getElementById('question-' + currentQuestion).style.display = 'block';
+                
+                // Update navigation buttons
+                document.getElementById('nextBtn').style.display = 'inline-block';
+                document.getElementById('submitBtn').style.display = 'none';
+                
+                if (currentQuestion === 0) {
+                    document.getElementById('prevBtn').disabled = true;
+                }
+            }
+            
+            // Update question number display
+            document.querySelector('.question-number').textContent = 'QNo. ' + (currentQuestion + 1) + '/' + totalQuestions;
+        }
+    </script>
+</body>
+</html>

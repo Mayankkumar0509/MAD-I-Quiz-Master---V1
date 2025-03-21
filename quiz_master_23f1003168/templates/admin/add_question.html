@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+    
+    .form-container {
+      width: 600px;
+      border: 2px solid #999;
+      border-radius: 15px;
+      padding: 20px;
+      background-color: white;
+      position: relative;
+    }
+    
+    .title {
+      color: #f90;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 15px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .form-row {
+      display: flex;
+      margin-bottom: 10px;
+      align-items: flex-start;
+    }
+    
+    .form-label {
+      width: 150px;
+      text-align: right;
+      margin-right: 10px;
+      color: #0080ff;
+      font-weight: bold;
+    }
+    
+    .form-input {
+      flex: 1;
+    }
+    
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #0080ff;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+    
+    .options-container {
+      border: 2px solid #999;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    .options-title {
+      color: #f90;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .button {
+      padding: 8px 20px;
+      background-color: #a0d0ff;
+      border: 1px solid #0080ff;
+      border-radius: 5px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .button:hover {
+      background-color: #80c0ff;
+    }
+    
+    .correct-option-container {
+      display: flex;
+      align-items: center;
+    }
+    
+    .correct-badge {
+      background-color: #fd6;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-left: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <div class="title">New Question</div>
+    <form action="/add_question" method="post">
+    
+    <div class="form-row">
+      <div class="form-label">quiz ID:</div>
+      <div class="form-input">
+        <input type="text" id="quiz_id" name="quiz_id">
+      </div>
+    </div>
+    
+    <!-- <div class="form-row">
+      <div class="form-label">Question Title:</div>
+      <div class="form-input">
+        <input type="text" id="questionTitle">
+      </div>
+    </div> -->
+    
+    <div class="form-row">
+      <div class="form-label">Question Statement:</div>
+      <div class="form-input">
+        <textarea id="questionStatement" name="question_statement"></textarea>
+      </div>
+    </div>
+    
+    <div class="options-container">
+      <div class="options-title">Single Option Correct</div>
+      
+      <div class="form-row">
+        <div class="form-label">Option 1)</div>
+        <div class="form-input">
+          <input type="text" id="option1" name="option1">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-label">Option 2)</div>
+        <div class="form-input">
+          <input type="text" id="option2" name="option2">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-label">Option 3)</div>
+        <div class="form-input">
+          <input type="text" id="option3" name="option3">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-label">Option 4)</div>
+        <div class="form-input">
+          <input type="text" id="option4" name="option4">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-label">Correct option</div>
+        <div class="form-input correct-option-container">
+          <input type="text" id="correct_option" name="correct_option" placeholder="1,2,3,4">
+        </div>
+      </div>
+    </div>
+    
+    <div class="button-container">
+      <button class="button" id="saveBtn" type="submit">Save and Next</button>
+      <a class="button" id="closeBtn" type="end" href="/quiz_management">Close</a>
+    </div>
+    </form>
+  </div>
+
+  <!-- <script>
+    document.getElementById('saveBtn').addEventListener('click', function() {
+      alert('Question saved!');
+      // Clear form logic would go here
+    });
+    
+    document.getElementById('closeBtn').addEventListener('click', function() {
+      alert('Form closed!');
+    });
+  </script> -->
+</body>
+</html>
