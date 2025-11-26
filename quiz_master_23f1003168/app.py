@@ -7,7 +7,7 @@ def create_app():
 
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz.sqlite3"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "default-secret")
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "mk0509")
 
     db.init_app(app)
     app.app_context().push()
@@ -36,3 +36,4 @@ with app.app_context():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))   # Render gives PORT
     app.run(host="0.0.0.0", port=port)
+
